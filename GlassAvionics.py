@@ -83,7 +83,7 @@ class GlassAvionics(object):
             #pitchAngle %= 360
             pitchAngle = pitchAngle# - 90
             #center screen with 450 height 225
-            pitchOffset = (math.tan(math.radians(pitchAngle)))/0.5
+            pitchOffset = (math.tan(math.radians(pitchAngle)))*2
             pitchOffsetPx = pitchOffset * 112 #112 px per inch
             #print("pitch: {0}, offset: {1}, roll: {2}".format(pitchAngle,pitchOffset,rollAngle))
             tkimage = ImageTk.PhotoImage(image.rotate(rollAngle))
