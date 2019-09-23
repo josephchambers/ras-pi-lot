@@ -1,6 +1,5 @@
 import time
 import tkinter
-#import cv2
 import math
 from PIL import Image, ImageTk
 from sense_hat import SenseHat
@@ -11,7 +10,7 @@ class GlassAvionics(object):
         self.master = master
         self.filename = filename
         self.root = root;
-        self.canvas = tkinter.Canvas(master, width=600, height=400)
+        self.canvas = tkinter.Canvas(master, width=650, height=400)
         self.canvas.grid(row=0, column=1, columnspan=1, rowspan=4)
 
         self.process_next_frame = self.draw().__next__  # Using "next(self.draw())" doesn't work
