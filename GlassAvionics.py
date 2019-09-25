@@ -119,7 +119,7 @@ class GlassAvionics(object):
             #print("roll: {0}".format(rollAngle))
             
             pitch = pitch%180
-            pitchAngle = self.roundToStablize(pitch)
+            pitchAngle = pitch#self.roundToStablize(pitch)
             #pitchAngle %= 360
             pitchAngle = pitchAngle + self.pitchOffset
             #center screen with 450 height 225
@@ -129,7 +129,7 @@ class GlassAvionics(object):
             tkimage = ImageTk.PhotoImage(image.rotate(rollAngle))
             planeImage = ImageTk.PhotoImage(imagePlane)        
             canvas_obj = self.canvas.create_image(300, 225+pitchOffsetPx, image=tkimage)
-            canvas_obj2 = self.canvas.create_image(300, 225, image=planeImage)
+            canvas_obj2 = self.canvas.create_image(325, 200, image=planeImage)
             self.master.after_idle(self.process_next_frame)
             yield
             self.canvas.delete(canvas_obj)
