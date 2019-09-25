@@ -5,15 +5,17 @@ from PIL import Image, ImageTk
 from sense_hat import SenseHat
 
 class GlassAvionics(object):
-    pressureSetting = 30.15
+    pressureSetting = 30.00
     bankOffset = 0
     pitchOffset = 0
-    def __init__(self, master, filename, **kwargs):
+    
+    def __init__(self, master, filename, plane, **kwargs):
         self.master = master
         self.filename = filename
-        self.root = root;
+        self.plane = plane
+        self.root = root
         self.canvas = tkinter.Canvas(master, width=650, height=400)
-        self.canvas.grid(row=0, column=1, columnspan=3, rowspan=4)
+        self.canvas.grid(row=0, column=2, columnspan=3, rowspan=7)
 
         self.process_next_frame = self.draw().__next__  # Using "next(self.draw())" doesn't work
         master.after(1, self.process_next_frame)
@@ -27,70 +29,76 @@ class GlassAvionics(object):
         return;
         
     def bankLeft(self):
-        self.bankOffset = round(self.bankOffset - 0.01,2)
+        self.bankOffset = self.bankOffset + 1
         return
     
     def bankRight(self):
-        self.bankOffset = round(self.bankOffset + 0.01,2)
+        self.bankOffset = self.bankOffset - 1
         return
         
     def pitchUp(self):
-        self.pitchOffset = round(self.pitchOffset + 0.01,2)
+        self.pitchOffset = self.pitchOffset + 1
         return
         
     def pitchDwn(self):
-        self.pitchOffset = round(self.pitchOffset - 0.01,2)
+        self.pitchOffset = self.pitchOffset - 1
         return
+    
     
     def draw(self):
         image = Image.open(self.filename)
+        imagePlane = Image.open(self.plane)
         v = tkinter.StringVar()
         label = tkinter.Label( root, textvariable=v )
         label.config(font=("Courier", 20))
-        label.grid(row=1, column=0)
+        label.grid(row=1, column=0, columnspan=2, rowspan=1)
         v.set("")
         
         vSet = tkinter.StringVar()
         labelSet = tkinter.Label( root, textvariable=vSet )
         labelSet.config(font=("Courier", 12))
-        labelSet.grid(row=2, column=0)
+        labelSet.grid(row=2, column=0, columnspan=2, rowspan=1)
         v.set("")
         
         pressureUpBtn = tkinter.Button(root, text="Pressure Up", command=self.pressureUp)
-        pressureUpBtn.grid(row=0, column=0)
+        pressureUpBtn.grid(row=0, column=0, columnspan=2)
         pressureUpBtn = pressureUpBtn.config( height = 3, width = 15 )
         
         pressureDwnBtn = tkinter.Button(root, text="Pressure Down", command=self.pressureDwn)    
-        pressureDwnBtn.grid(row=3, column=0)
+        pressureDwnBtn.grid(row=3, column=0, columnspan=2)
         pressureDwnBtn = pressureDwnBtn.config( height = 3, width = 15 )
         
-        bankLeftBtn = tkinter.Button(root, text="< Bank", command=self.bankLeft)    
-        bankLeftBtn.grid(row=3, column=1)
-        bankLeftBtn = bankLeftBtn.config( height = 2, width = 10 )
+        bankLeftBtn = tkinter.Button(root, text="< Roll", command=self.bankLeft)    
+        bankLeftBtn.grid(row=5, column=0, columnspan=1)
+        bankLeftBtn = bankLeftBtn.config( height = 1, width = 5 )
         
-        bankRightBtn = tkinter.Button(root, text="Bank >", command=self.bankRight)    
-        bankRightBtn.grid(row=3, column=2)
-        bankRightBtn = bankRightBtn.config( height = 2, width = 10 )
+        bankRightBtn = tkinter.Button(root, text="Roll >", command=self.bankRight)    
+        bankRightBtn.grid(row=5, column=1)
+        bankRightBtn = bankRightBtn.config( height = 1, width = 5 )
         
-        pitchUpBtn = tkinter.Button(root, text="Pitch Up", command=self.pitchUp)    
-        pitchUpBtn.grid(row=0, column=3)
-        pitchUpBtn = pitchUpBtn.config( height = 2, width = 10 )
+        pitchUpBtn = tkinter.Button(root, text="+Pitch", command=self.pitchUp)    
+        pitchUpBtn.grid(row=4, column=0)
+        pitchUpBtn = pitchUpBtn.config( height = 1, width = 5 )
         
-        pitchDwnBtn = tkinter.Button(root, text="Pitch Down", command=self.pitchDwn)    
-        pitchDwnBtn.grid(row=3, column=3)
-        pitchDwnBtn = pitchDwnBtn.config( height = 2, width = 10 )
+        pitchDwnBtn = tkinter.Button(root, text="-Pitch", command=self.pitchDwn)    
+        pitchDwnBtn.grid(row=4, column=1)
+        pitchDwnBtn = pitchDwnBtn.config( height = 1, width = 5 )
         
+        ##showHideBtn = tkinter.Button(root, text="Hide", command=self.showHide)    
+        #showHideBtn.grid(row=4, column=0)
+        #showHideBtn = showHideBtn.config( height = 3, width = 15 )
+    
         angle = 0
         #print(self.process_next_frame)
         sense = SenseHat()
         #sense.set_rotation(180)
-        #sense.set_imu_config(True, True, False)
+        sense.set_imu_config(True, True, True)
         sense.clear()
         while True:
             pressure = sense.get_pressure()
             #AS = 30.19
             pressInHG = pressure * 0.02953 #convet from milibar to inHG
-            print(pressInHG)
+            #print(pressInHG)
             altitude = "ERROR"
             if pressInHG >= 0:
                 altitude = round((pow(self.pressureSetting,0.1903) - pow(pressInHG,(1/5.255)))/(1.212*(pow(10,-5))))
@@ -110,6 +118,7 @@ class GlassAvionics(object):
             #rowAngle %= 360
             #print("roll: {0}".format(rollAngle))
             
+            pitch = pitch%180
             pitchAngle = self.roundToStablize(pitch)
             #pitchAngle %= 360
             pitchAngle = pitchAngle + self.pitchOffset
@@ -118,8 +127,9 @@ class GlassAvionics(object):
             pitchOffsetPx = pitchOffset * 112 #112 px per inch
             #print("pitch: {0}, offset: {1}, roll: {2}".format(pitchAngle,pitchOffset,rollAngle))
             tkimage = ImageTk.PhotoImage(image.rotate(rollAngle))
-        
+            planeImage = ImageTk.PhotoImage(imagePlane)        
             canvas_obj = self.canvas.create_image(300, 225+pitchOffsetPx, image=tkimage)
+            canvas_obj2 = self.canvas.create_image(300, 225, image=planeImage)
             self.master.after_idle(self.process_next_frame)
             yield
             self.canvas.delete(canvas_obj)
@@ -133,5 +143,5 @@ class GlassAvionics(object):
     
 root = tkinter.Tk()
 
-app = GlassAvionics(root, 'bg.png')
+app = GlassAvionics(root, 'bg.png', 'plane.png')
 root.mainloop()
