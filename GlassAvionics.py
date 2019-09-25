@@ -23,6 +23,22 @@ class GlassAvionics(object):
     def pressureDwn(self):
         self.pressureSetting = round(self.pressureSetting-.01,2)
         return;
+        
+    def bankLeft(self):
+    
+        return
+    
+    def bankRight(self):
+    
+        return
+        
+    def pitchUp(self):
+    
+        return
+        
+    def pitchDwn(self):
+    
+        return
     
     def draw(self):
         image = Image.open(self.filename)
@@ -39,15 +55,28 @@ class GlassAvionics(object):
         v.set("")
         
         pressureUpBtn = tkinter.Button(root, text="Pressure Up", command=self.pressureUp)
-        #pressureUpBtn.bind('<ButtonPress-1>',self.pressureUp)
         pressureUpBtn.grid(row=0, column=0)
         pressureUpBtn = pressureUpBtn.config( height = 3, width = 15 )
         
-        pressureDwnBtn = tkinter.Button(root, text="Pressure Down", command=self.pressureDwn)
-        #pressureDwnBtn.bind('<ButtonPress-1>',self.pressureDwn)    
+        pressureDwnBtn = tkinter.Button(root, text="Pressure Down", command=self.pressureDwn)    
         pressureDwnBtn.grid(row=3, column=0)
         pressureDwnBtn = pressureDwnBtn.config( height = 3, width = 15 )
         
+        bankLeftBtn = tkinter.Button(root, text="< Bank", command=self.bankLeft)    
+        bankLeftBtn.grid(row=3, column=1)
+        bankLeftBtn = bankLeftBtn.config( height = 3, width = 15 )
+        
+        bankRightBtn = tkinter.Button(root, text="Bank >", command=self.bankRight)    
+        bankRightBtn.grid(row=3, column=2)
+        bankRightBtn = bankRightBtn.config( height = 3, width = 15 )
+        
+        pitchUpBtn = tkinter.Button(root, text="Pitch Up", command=self.pitchUp)    
+        pitchUpBtn.grid(row=1, column=3)
+        pitchUpBtn = pitchUpBtn.config( height = 3, width = 15 )
+        
+        pitchDwnBtn = tkinter.Button(root, text="Bank >", command=self.pitchDwn)    
+        pitchDwnBtn.grid(row=3, column=3)
+        pitchDwnBtn = pitchDwnBtn.config( height = 3, width = 15 )
         
         angle = 0
         #print(self.process_next_frame)
