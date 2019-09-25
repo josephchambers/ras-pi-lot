@@ -17,7 +17,7 @@ class GlassAvionics(object):
         self.canvas = tkinter.Canvas(master, width=650, height=400)
         self.canvas.grid(row=0, column=2, columnspan=3, rowspan=7)
 
-        self.process_next_frame = self.draw().__next__  # Using "next(self.draw())" doesn't work
+        self.process_next_frame = self.draw().__next__
         master.after(1, self.process_next_frame)
         
     def pressureUp(self):
@@ -46,8 +46,8 @@ class GlassAvionics(object):
     
     
     def draw(self):
-        image = Image.open(self.filename)
-        imagePlane = Image.open(self.plane)
+        imageHorizon = Image.open(self.filename)#horizon image
+        imagePlane = Image.open(self.plane)#line to show center
         v = tkinter.StringVar()
         label = tkinter.Label( root, textvariable=v )
         label.config(font=("Courier", 20))
@@ -84,21 +84,14 @@ class GlassAvionics(object):
         pitchDwnBtn.grid(row=4, column=1)
         pitchDwnBtn = pitchDwnBtn.config( height = 1, width = 5 )
         
-        ##showHideBtn = tkinter.Button(root, text="Hide", command=self.showHide)    
-        #showHideBtn.grid(row=4, column=0)
-        #showHideBtn = showHideBtn.config( height = 3, width = 15 )
-    
         angle = 0
-        #print(self.process_next_frame)
         sense = SenseHat()
-        #sense.set_rotation(180)
         sense.set_imu_config(True, True, True)
         sense.clear()
         while True:
             pressure = sense.get_pressure()
-            #AS = 30.19
             pressInHG = pressure * 0.02953 #convet from milibar to inHG
-            #print(pressInHG)
+           
             altitude = "ERROR"
             if pressInHG >= 0:
                 altitude = round((pow(self.pressureSetting,0.1903) - pow(pressInHG,(1/5.255)))/(1.212*(pow(10,-5))))
@@ -112,11 +105,9 @@ class GlassAvionics(object):
             pitch = o["pitch"]
             roll = o["roll"]
             yaw = o["yaw"]
-            #print("RAW - Pitch: {0}, Roll: {1}, Yaw: {2}".format(pitch,roll,yaw))
-                  
-            rollAngle = self.roundToStablize(roll-90) + self.bankOffset
-            #rowAngle %= 360
-            #print("roll: {0}".format(rollAngle))
+                 
+            #rollAngle = self.roundToStablize(roll-90) + self.bankOffset
+            rollAngle = (roll-90) + self.bankOffset
             
             pitch = pitch%180
             pitchAngle = pitch#self.roundToStablize(pitch)
@@ -126,13 +117,13 @@ class GlassAvionics(object):
             pitchOffset = (math.tan(math.radians(pitchAngle)))*2
             pitchOffsetPx = pitchOffset * 112 #112 px per inch
             #print("pitch: {0}, offset: {1}, roll: {2}".format(pitchAngle,pitchOffset,rollAngle))
-            tkimage = ImageTk.PhotoImage(image.rotate(rollAngle))
+            horizonImage = ImageTk.PhotoImage(imageHorizon.rotate(rollAngle))
             planeImage = ImageTk.PhotoImage(imagePlane)        
-            canvas_obj = self.canvas.create_image(300, 225+pitchOffsetPx, image=tkimage)
-            canvas_obj2 = self.canvas.create_image(325, 200, image=planeImage)
+            attitudeObj = self.canvas.create_image(300, 225+pitchOffsetPx, image=horizonImage)
+            self.canvas.create_image(325, 200, image=planeImage)
             self.master.after_idle(self.process_next_frame)
             yield
-            self.canvas.delete(canvas_obj)
+            self.canvas.delete(attitudeObj)
             time.sleep(0.0009)
             
             
