@@ -11,7 +11,7 @@ class GlassAvionics(object):
         self.filename = filename
         self.root = root;
         self.canvas = tkinter.Canvas(master, width=650, height=400)
-        self.canvas.grid(row=0, column=1, columnspan=1, rowspan=4)
+        self.canvas.grid(row=0, column=1, columnspan=3, rowspan=4)
 
         self.process_next_frame = self.draw().__next__  # Using "next(self.draw())" doesn't work
         master.after(1, self.process_next_frame)
@@ -64,19 +64,19 @@ class GlassAvionics(object):
         
         bankLeftBtn = tkinter.Button(root, text="< Bank", command=self.bankLeft)    
         bankLeftBtn.grid(row=3, column=1)
-        bankLeftBtn = bankLeftBtn.config( height = 3, width = 15 )
+        bankLeftBtn = bankLeftBtn.config( height = 2, width = 10 )
         
         bankRightBtn = tkinter.Button(root, text="Bank >", command=self.bankRight)    
         bankRightBtn.grid(row=3, column=2)
-        bankRightBtn = bankRightBtn.config( height = 3, width = 15 )
+        bankRightBtn = bankRightBtn.config( height = 2, width = 10 )
         
         pitchUpBtn = tkinter.Button(root, text="Pitch Up", command=self.pitchUp)    
-        pitchUpBtn.grid(row=1, column=3)
-        pitchUpBtn = pitchUpBtn.config( height = 3, width = 15 )
+        pitchUpBtn.grid(row=0, column=3)
+        pitchUpBtn = pitchUpBtn.config( height = 2, width = 10 )
         
-        pitchDwnBtn = tkinter.Button(root, text="Bank >", command=self.pitchDwn)    
+        pitchDwnBtn = tkinter.Button(root, text="Pitch Down", command=self.pitchDwn)    
         pitchDwnBtn.grid(row=3, column=3)
-        pitchDwnBtn = pitchDwnBtn.config( height = 3, width = 15 )
+        pitchDwnBtn = pitchDwnBtn.config( height = 2, width = 10 )
         
         angle = 0
         #print(self.process_next_frame)
