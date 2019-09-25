@@ -6,6 +6,8 @@ from sense_hat import SenseHat
 
 class GlassAvionics(object):
     pressureSetting = 30.15
+    bankOffset = 0
+    pitchOffset = 0
     def __init__(self, master, filename, **kwargs):
         self.master = master
         self.filename = filename
@@ -25,19 +27,19 @@ class GlassAvionics(object):
         return;
         
     def bankLeft(self):
-    
+        self.bankOffset = round(self.bankOffset - 0.01,2)
         return
     
     def bankRight(self):
-    
+        self.bankOffset = round(self.bankOffset + 0.01,2)
         return
         
     def pitchUp(self):
-    
+        self.pitchOffset = round(self.pitchOffset + 0.01,2)
         return
         
     def pitchDwn(self):
-    
+        self.pitchOffset = round(self.pitchOffset - 0.01,2)
         return
     
     def draw(self):
@@ -104,13 +106,13 @@ class GlassAvionics(object):
             yaw = o["yaw"]
             #print("RAW - Pitch: {0}, Roll: {1}, Yaw: {2}".format(pitch,roll,yaw))
                   
-            rollAngle = self.roundToStablize(roll-90)
+            rollAngle = self.roundToStablize(roll-90) + self.bankOffset
             #rowAngle %= 360
             #print("roll: {0}".format(rollAngle))
             
             pitchAngle = self.roundToStablize(pitch)
             #pitchAngle %= 360
-            pitchAngle = pitchAngle# - 90
+            pitchAngle = pitchAngle + self.pitchOffset
             #center screen with 450 height 225
             pitchOffset = (math.tan(math.radians(pitchAngle)))*2
             pitchOffsetPx = pitchOffset * 112 #112 px per inch
